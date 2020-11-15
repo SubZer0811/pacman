@@ -90,12 +90,27 @@ class ghost ():
 	def move_ghost(self):
     		
 		self.cleardraw()
-
-		
-		key_press = random.randint(0,3)
-		print(key_press)
 		tmp_x = self.coord[0]
 		tmp_y = self.coord[1]
+
+		way_mat = [0, 0, 0, 0]			# left, right, up, down
+		if(maze[tmp_y][tmp_x+1] != 1):
+			way_mat[0] = 1
+		if(maze[tmp_y][tmp_x-1] != 1):
+			way_mat[1] = 1
+		if(maze[tmp_y-1][tmp_x] != 1):
+			way_mat[2] = 1
+		if(maze[tmp_y+1][tmp_x] != 1):
+			way_mat[3] = 1
+
+		test = []
+		for i in range(len(way_mat)):
+			if(way_mat[i]):
+				test.append(i)
+		print("test: ", test)
+		key_press = random.randint(0,len(test)-1)
+		print(key_press)
+		key_press = test[key_press]
 		if(maze[tmp_y][tmp_x] == 9):
 			self.draw_coin()
 			print("call-coin")
@@ -210,5 +225,5 @@ while True:
 			pygame.quit()
 			exit()
 
-	clock.tick(2)
+	clock.tick(8)
 	pygame.display.flip()
