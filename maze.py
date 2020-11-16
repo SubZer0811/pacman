@@ -38,10 +38,18 @@ class maze_map:
 	pixel_size = 20
 	pixel_center = pixel_size/2
 	wall_colour = (255,0,0)
+	
 	coin_colour = (255, 182, 193)
 	coin_radius = 4
+
+	############################## Player properties ##############################
 	player_colour = (255, 255, 0)
 	player_radius = 8
+	player_coord = []
+
+	############################## Ghost properties ##############################
+	ghost1_colour = (0,255,0)
+	ghost1_radius=10
 
 	def __init__(self, surface):
 		self.surface = surface
