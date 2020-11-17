@@ -4,6 +4,8 @@ import random
 from maze import *
 from player import *
 from ghost import *
+from global_vars import *
+import config
 
 coin_score=0
 
@@ -23,13 +25,15 @@ pygame.display.flip()
 clock = pygame.time.Clock()
 
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', 24)
-# ghost1.move_ghost()
+ghost1.thread.start()
 
-thread_status = [0, 0, 0, 0]
+# main_lock = threading.Lock()
 
 while True:
 	# print(pygame.time.get_ticks())
-	thread_status = [0, 0, 0, 0]
+	# main_lock.acquire(blocking=True)
+	config.thread_status = [0, 0, 0, 0]
+	# main_lock.release()
 	keys = pygame.key.get_pressed()
 
 	tmp_x = player_1.player_coord[0]
@@ -97,9 +101,12 @@ while True:
 	surface.blit(text, (100, 650))
 	
 	while True:
-		if(sum(thread_status) == 1):
-    		break
-
+		print("main thread: {}" .format(config.thread_status))
+		if(sum(config.thread_status) == 1):
+			print("asdf")
+			break
+		# pygame.time.wait(1000)
+	
 	clock.tick(8)
 	
 	pygame.display.flip()

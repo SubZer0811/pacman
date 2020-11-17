@@ -1,6 +1,8 @@
 from maze import *
 import random
 import threading
+from global_vars import *
+import pygame
 
 ghost_call = 0
 
@@ -13,7 +15,6 @@ class ghost (maze_map):
 		self.ghost_radius = 10
 
 		self.thread = threading.Thread(target=self.move_ghost)
-		self.thread.start()
 		
 	def draw(self):
 		pygame.draw.circle(self.surface, self.ghost_colour, (self.coord[0]*self.pixel_size+(self.pixel_center), self.coord[1]*self.pixel_size+(self.pixel_center)), self.ghost_radius)
@@ -26,10 +27,15 @@ class ghost (maze_map):
 		
 	def move_ghost(self):
     	
+		# ghost_lock = threading.Lock()
 		global thread_status
 		while True:
 			# print("loop")
-			if(thread_status[0] == 0):
+			# ghost_lock.acquire()
+			print("ghost1 thread: {}" .format(config.thread_status))
+			if(config.thread_status[0] == 0):
+				print("if")
+				print(config.thread_status[0])
 				self.cleardraw()
 				tmp_x = self.coord[0]
 				tmp_y = self.coord[1]
@@ -74,5 +80,8 @@ class ghost (maze_map):
 						print("ghost-down")
 						self.coord[1]+=1
 					self.draw()
-				thread_status[0] = 1
+					
+				config.thread_status[0] = 1
+			# pygame.time.wait(1000)
+			# ghost_lock.release()
 				# pygame.time.wait(100)
