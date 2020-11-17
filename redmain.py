@@ -53,9 +53,6 @@ class maze_map:
 	player_radius = 8
 	player_coord = []
 
-	############################## Ghost properties ##############################
-	
-
 	def __init__(self, surface):
 		self.surface = surface
 
@@ -91,7 +88,7 @@ class player(maze_map):
 
 class ghost (maze_map):
 
-	def __init__(self,coord,surface,mode="chase",color="red"):
+	def __init__(self,coord,surface,tid,mode="chase",color="red"):
 		self.coord=coord
 		self.surface=surface
 		self.ghost_colour = (0,255,0)
@@ -102,6 +99,7 @@ class ghost (maze_map):
 		self.color=color
 		self.speedcnt=0
 		self.dir=-1
+		self.tid = tid
 
 		self.thread = threading.Thread(target=self.move_ghost, daemon=True)
 		
@@ -116,19 +114,13 @@ class ghost (maze_map):
 	
 	def move_ghost(self):
 		
-		# ghost_lock = threading.Lock()
-		global thread_status,player_1
+		global thread_status, player_1
 		while True:
 			
-			# print("ghost1 thread: {}" .format(thread_status))
-			# play_x=player_1.player_coord[0]
-			# play_y=player_1.player_coord[1]
-			if(thread_status[0] == 0):
+			if(thread_status[self.tid] == 0):
 				self.cleardraw()
 				if(self.speedcnt==0):
-			
-					
-				
+
 					tmp_x = int(self.coord[0])
 					tmp_y = int(self.coord[1])
 
@@ -157,30 +149,26 @@ class ghost (maze_map):
 						
 					if(key_press == 0):
 						if(maze[tmp_y][tmp_x+1] != 1):
-							print("ghost-right")
+							# print("ghost-right")
 							self.coord[0]+=0.5
 							self.dir=0
-						self.draw()
 					elif(key_press == 1):
 						if(maze[tmp_y][tmp_x-1]!=1):
-							print("ghost-left")
+							# print("ghost-left")
 							self.coord[0]-=0.5
 							self.dir=1
-						self.draw()
 					elif(key_press == 2):
 						if(maze[tmp_y-1][tmp_x]!=1):
-							print("ghost-up")
+							# print("ghost-up")
 							self.coord[1]-=0.5
 							self.dir=2
-						self.draw()
 					elif(key_press == 3):
 						if(maze[tmp_y+1][tmp_x]!=1):
-							print("ghost-down")
+							# print("ghost-down")
 							self.coord[1]+=0.5
 							self.dir=3
-						self.draw()
-						
 					
+					self.draw()
 					self.speedcnt=1
 				else:
 					self.cleardraw()
@@ -214,33 +202,21 @@ class ghost (maze_map):
 					self.draw()
 
 					self.speedcnt=0
-				thread_status[0] = 1
-			# pygame.time.wait(1000)
-			# ghost_lock.release()
-				# pygame.time.wait(100)
+				thread_status[self.tid] = 1
 	
 	def next_tile(self):
 		global player_1
 		if(self.color=="red"):
 			if(self.mode=="chase"):
-				#ghostpos
+
 				tmp_x=int(self.coord[0])
 				tmp_y=int(self.coord[1])
 				
 				play_x=player_1.player_coord[0]
 				play_y=player_1.player_coord[1]
+				time = pygame.time.get_ticks()
 				s=self.BFS(self.coord,player_1.player_coord)
-				print(self.coord,"----->",s)
-				# print((play_x, play_y))
-				# test = []
-				# if(maze[tmp_y][tmp_x+1] != 1):
-				# 	test.append((play_x-tmp_x-1)**2+(play_y-tmp_y)**2)
-				# if(maze[tmp_y][tmp_x-1] != 1):
-				# 	test.append((play_x-tmp_x+1)**2+(play_y-tmp_y)**2)
-				# if(maze[tmp_y-1][tmp_x] != 1):
-				# 	test.append((play_x-tmp_x)**2+(play_y-tmp_y+1)**2)
-				# if(maze[tmp_y+1][tmp_x] != 1):
-				# 	test.append((play_x-tmp_x)**2+(play_y-tmp_y-1)**2)
+				print(pygame.time.get_ticks() - time)
 				if(self.coord[0]<s[0]):
 					return 0
 				elif(self.coord[0]>s[0]):
@@ -256,7 +232,7 @@ class ghost (maze_map):
 				tmp_y=int(self.coord[1])
 				play_x=player_1.player_coord[0]
 				play_y=player_1.player_coord[1]
-				print((play_x, play_y))
+				# print((play_x, play_y))
 				test = []
 				if(maze[tmp_y][tmp_x+1] != 1):
 					test.append((play_x-tmp_x-1)**2+(play_y-tmp_y)**2)
@@ -309,23 +285,18 @@ mapobj.show()
 player_1 = player([1, 2], surface)
 player_1.draw()
 
-ghost1=ghost([11,13],surface)
-ghost2=ghost([15,13],surface,color="pink")
+ghost1=ghost([11,13],surface,0)
+ghost2=ghost([15,13],surface,1,color="pink")
 
 pygame.display.flip()
 clock = pygame.time.Clock()
 
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', 24)
 ghost1.thread.start()
-ghost2.thread.start()
-
-# main_lock = threading.Lock()
+# ghost2.thread.start()
 
 while True:
-	# print(pygame.time.get_ticks())
-	# main_lock.acquire(blocking=True)
 	thread_status = [0, 0, 0, 0]
-	# main_lock.release()
 	keys = pygame.key.get_pressed()
 
 	tmp_x = player_1.player_coord[0]
@@ -344,7 +315,7 @@ while True:
 			exit(0)
 
 	if keys[pygame.K_RIGHT]:
-		if(maze[tmp_y][tmp_x+1]==9 or maze[tmp_y][tmp_x+1]==0):
+		if(maze[tmp_y][tmp_x+1] == 9 or maze[tmp_y][tmp_x+1] == 0):
 			# print("right")
 			if(maze[tmp_y][tmp_x+1]==9):
 				player_1.coin_score+=1
@@ -396,10 +367,11 @@ while True:
 	while True:
 		# print("main thread: {}" .format(thread_status))
 		if(sum(thread_status) == 1):
+			# print(thread_status)
 			# print("asdf")
 			break
 		# pygame.time.wait(1000)
 	
-	clock.tick(8)
+	clock.tick(10)
 	
 	pygame.display.flip()
