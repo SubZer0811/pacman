@@ -26,10 +26,10 @@ class ghost (maze_map):
 		
 	def move_ghost(self):
     	
-		global ghost_call
+		global thread_status
 		while True:
 			# print("loop")
-			if(ghost_call):
+			if(thread_status[0] == 0):
 				self.cleardraw()
 				tmp_x = self.coord[0]
 				tmp_y = self.coord[1]
@@ -74,5 +74,5 @@ class ghost (maze_map):
 						print("ghost-down")
 						self.coord[1]+=1
 					self.draw()
-
-				pygame.time.wait(100)
+				thread_status[0] = 1
+				# pygame.time.wait(100)

@@ -25,8 +25,11 @@ clock = pygame.time.Clock()
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', 24)
 # ghost1.move_ghost()
 
+thread_status = [0, 0, 0, 0]
+
 while True:
-	print(pygame.time.get_ticks())
+	# print(pygame.time.get_ticks())
+	thread_status = [0, 0, 0, 0]
 	keys = pygame.key.get_pressed()
 
 	tmp_x = player_1.player_coord[0]
@@ -93,9 +96,10 @@ while True:
 	text = GAME_FONT.render("LIVES: "+ str(player_1.lives) +50*' '+"SCORE: " + str(coin_score), True, (255, 0, 255))
 	surface.blit(text, (100, 650))
 	
+	while True:
+		if(sum(thread_status) == 1):
+    		break
 
-	threading.Lock()
-	ghost_call = 1
 	clock.tick(8)
-	ghost_call = 0
+	
 	pygame.display.flip()
