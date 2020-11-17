@@ -48,8 +48,7 @@ class maze_map:
 	player_coord = []
 
 	############################## Ghost properties ##############################
-	ghost1_colour = (0,255,0)
-	ghost1_radius=10
+	
 
 	def __init__(self, surface):
 		self.surface = surface
