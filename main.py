@@ -121,10 +121,11 @@ class ghost (maze_map):
 			# play_x=player_1.player_coord[0]
 			# play_y=player_1.player_coord[1]
 			if(thread_status[0] == 0):
+				self.cleardraw()
 				if(self.speedcnt==0):
-					print("if")
-					print(thread_status[0])
-					self.cleardraw()
+			
+					
+				
 					tmp_x = int(self.coord[0])
 					tmp_y = int(self.coord[1])
 
@@ -158,33 +159,44 @@ class ghost (maze_map):
 					elif(key_press == 1):
 						if(maze[tmp_y][tmp_x-1]!=1):
 							print("ghost-left")
-							self.coord[0]-=1
+							self.coord[0]-=0.5
 							self.dir=1
 						self.draw()
 					elif(key_press == 2):
 						if(maze[tmp_y-1][tmp_x]!=1):
 							print("ghost-up")
-							self.coord[1]-=1
+							self.coord[1]-=0.5
 							self.dir=2
 						self.draw()
 					elif(key_press == 3):
 						if(maze[tmp_y+1][tmp_x]!=1):
 							print("ghost-down")
-							self.coord[1]+=1
+							self.coord[1]+=0.5
 							self.dir=3
 						self.draw()
 						
 					
 					self.speedcnt=1
 				else:
+					tmp_x = int(self.coord[0])
+					tmp_y = int(self.coord[1])
+
+					if(maze[tmp_y][tmp_x] == 9):
+						self.draw_coin()
+					
 					if(self.dir==0):
 						self.coord[0]+=0.5
+						
 					elif(self.dir==1):
 						self.coord[0]-=0.5
 					elif(self.dir==2):
 						self.coord[1]-=0.5
 					elif(self.dir==3):
 						self.coord[1]+=0.5
+					
+					if(maze[tmp_y][tmp_x] == 9):
+						self.draw_coin()
+					self.draw()
 
 					self.speedcnt=0
 				thread_status[0] = 1
