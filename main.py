@@ -181,19 +181,22 @@ class ghost (maze_map):
 					tmp_x = int(self.coord[0])
 					tmp_y = int(self.coord[1])
 
-					if(maze[tmp_y][tmp_x] == 9):
-						self.draw_coin()
+					# if(maze[tmp_y][tmp_x] == 9):
+					# 	self.draw_coin()
 					
 					if(self.dir==0):
 						self.coord[0]+=0.5
-						
+						tmp_x+=1
 					elif(self.dir==1):
 						self.coord[0]-=0.5
+						tmp_x-=1
 					elif(self.dir==2):
 						self.coord[1]-=0.5
+						tmp_y-=1
 					elif(self.dir==3):
 						self.coord[1]+=0.5
-					
+						tmp_y+=1
+
 					if(maze[tmp_y][tmp_x] == 9):
 						self.draw_coin()
 					self.draw()
@@ -235,7 +238,7 @@ surface = pygame.display.set_mode((560,700))
 mapobj= maze_map(surface)
 mapobj.show()
 
-player_1 = player([13, 29], surface)
+player_1 = player([1, 2], surface)
 player_1.draw()
 
 ghost1=ghost([11,13],surface)
