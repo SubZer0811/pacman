@@ -3,6 +3,7 @@ import sys
 import random
 import threading
 import math
+import time
 thread_status = [0, 0, 0, 0]
 
 maze = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -110,7 +111,7 @@ class ghost (maze_map):
 	
 	def draw_coin(self):
 		pygame.draw.circle(self.surface, self.coin_colour, (self.coord[0]*self.pixel_size+(self.pixel_center), self.coord[1]*self.pixel_size+(self.pixel_center)), self.coin_radius)
-		
+	
 	def move_ghost(self):
     	
 		# ghost_lock = threading.Lock()
@@ -178,27 +179,36 @@ class ghost (maze_map):
 					
 					self.speedcnt=1
 				else:
+					self.cleardraw()
+					tf_x = self.coord[0]
+					tf_y = self.coord[1]
 					tmp_x = int(self.coord[0])
 					tmp_y = int(self.coord[1])
-
-					# if(maze[tmp_y][tmp_x] == 9):
-					# 	self.draw_coin()
-					
+					self.coord[0]=tmp_x
+					self.coord[1]=tmp_y
+					print(tmp_x,tmp_y,"----->")
+					if(maze[tmp_y][tmp_x] == 9):
+					 	self.draw_coin()
 					if(self.dir==0):
-						self.coord[0]+=0.5
+						tf_x+=0.5
 						tmp_x+=1
 					elif(self.dir==1):
-						self.coord[0]-=0.5
-						tmp_x-=1
+						tf_x-=0.5
+						tmp_x+=1
 					elif(self.dir==2):
-						self.coord[1]-=0.5
-						tmp_y-=1
+						tf_y-=0.5
+						tmp_y+=1
 					elif(self.dir==3):
-						self.coord[1]+=0.5
+						tf_y+=0.5
 						tmp_y+=1
 
+					self.coord[0]=tmp_x
+					self.coord[1]=tmp_y
 					if(maze[tmp_y][tmp_x] == 9):
 						self.draw_coin()
+					self.coord[0]=tf_x
+					self.coord[1]=tf_y
+					print(tmp_x,tmp_y,"----->")
 					self.draw()
 
 					self.speedcnt=0
