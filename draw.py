@@ -9,7 +9,6 @@ coin_radius = 4
 
 
 def draw(coord, ghost_colour):
-	print("draw: ",coord)
 	pygame.draw.circle(config.surface, ghost_colour, (coord[0]*pixel_size+(pixel_center), coord[1]*pixel_size+(pixel_center)), ghost_radius)
 	
 def cleardraw(coord):

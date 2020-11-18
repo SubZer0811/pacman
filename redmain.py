@@ -36,19 +36,19 @@ class ghost (maze_map):
 		# self.thread = threading.Thread(target=self.move_ghost, daemon=True)
 	
 	def move_ghost(self, rcv, ret):
-		global surface
-		pygame.draw.circle(surface, (0,53,255), (100, 100), 75)
 		
 		while True:
-			print(self.coord)
+			# print(self.coord)
 			pygame.time.wait(100)
-		
+			print(rcv['t_stat'])
 			t_stat=rcv['t_stat']
 
 			# print("before: ", ret['draw'])
 			# ret['draw'] = (self.coord, self.ghost_colour)
 			# print("after: ", ret['draw'])
-			
+			if(t_stat[self.tid] == 3):
+				return
+
 			if(t_stat[self.tid] == 0):
 
 				# self.cleardraw()
@@ -89,7 +89,8 @@ class ghost (maze_map):
 								test.append(i)
 						ind=self.next_tile(rcv)
 						key_press = test[ind]
-						
+					if(key_press==-1):
+						continue
 					if(maze[tmp_y][tmp_x] == 9):
 						# self.draw_coin()
 						
@@ -116,7 +117,7 @@ class ghost (maze_map):
 							self.coord[1]+=0.5
 							self.dir=3
 					
-					print(key_press)
+					# print(key_press)
 					
 					# self.draw()
 					
@@ -171,9 +172,11 @@ class ghost (maze_map):
 				
 				# play_x=player_1.player_coord[0]
 				# play_y=player_1.player_coord[1]
-				time = pygame.time.get_ticks()
+				# time = pygame.time.get_ticks()
 				s=self.BFS(self.coord,rcv["player_coord"])
-				print(pygame.time.get_ticks() - time)
+				if(s==-1):
+					return -1
+				# print(pygame.time.get_ticks() - time)
 				if(self.coord[0]<s[0]):
 					return 0
 				elif(self.coord[0]>s[0]):
@@ -200,6 +203,8 @@ class ghost (maze_map):
 				if(maze[tmp_y+1][tmp_x] != 1):
 					test.append((play_x-tmp_x)**2+(play_y-tmp_y-1)**2)
 
+				if(play_x==tmp_x and tmp_y==play_y):
+					return -1
 				return test.index(min(test))
 
 	def BFS(self, start, target):
@@ -229,20 +234,21 @@ class ghost (maze_map):
 				if step["Next"] == target:
 					target = step["Current"]
 					shortest.insert(0, step["Current"])
-		return(shortest[1])
+		if(len(shortest)>1):
+			return(shortest[1])
+		return -1
 
 
 mapobj= maze_map(surface)
 mapobj.show()
 
-player_1 = player([1, 2], surface)
-player_1.draw()
+player_1 = player([13, 29], surface)
 
 ghost1=ghost([11,13],surface,0)
 ghost2=ghost([15,13],surface,1,color="pink")
 
 draw((ghost1.coord), ghost1.ghost_colour)
-draw(ghost2.coord, ghost2.ghost_colour)
+draw((ghost2.coord), ghost2.ghost_colour)
 # ghost1.draw()
 # ghost2.draw()
 
@@ -288,57 +294,61 @@ with multiprocessing.Manager() as manager:
 		tmp_x = player_1.player_coord[0]
 		tmp_y = player_1.player_coord[1]
 
-		if(ghost1.coord == player_1.player_coord or ghost2.coord == player_1.player_coord):
-			print("dead")
+		print(snd1['draw'][0], snd2['draw'][0], player_1.player_coord)
+		if(snd1['draw'][0] == player_1.player_coord or snd2['draw'][0] == player_1.player_coord):
+			print("lives: ", player_1.lives)
 			if(player_1.lives - 1 > 0):
+				print("TEST")
 				player_1.lives -= 1
+				maze[player_1.player_coord[1]][player_1.player_coord[0]]=0
 				player_1.player_coord[0] = 13; player_1.player_coord[1] = 29
-				player_1.draw()
+				maze[29][13]=7
 				pygame.time.wait(1000)
+
 				continue
 			else:
+				snd["t_stat"]=[3 for i in range(4)]
+				p1.join()
+				p2.join()
 				exit(0)
 
 		if keys[pygame.K_RIGHT]:
 			if(maze[tmp_y][tmp_x+1] == 9 or maze[tmp_y][tmp_x+1] == 0):
-				# print("right")
-				if(maze[tmp_y][tmp_x+1]==9):
-					player_1.coin_score+=1
-					maze[tmp_y][tmp_x+1]=0
-					# print("Score:",player_1.coin_score)
-				player_1.cleardraw()
-				player_1.player_coord[0]+=1
-				player_1.draw()
+				maze[tmp_y][tmp_x]=0
+				if(maze[tmp_y][tmp_x+1]==9):		# check coin
+					player_1.coin_score+=1			# increment score
+					maze[tmp_y][tmp_x+1]=0			# update map with no coin
+
+				player_1.player_coord[0]+=1			
+				maze[player_1.player_coord[1]][player_1.player_coord[0]] = 7
+
 		elif keys[pygame.K_LEFT]:
 			if(maze[tmp_y][tmp_x-1]==9 or maze[tmp_y][tmp_x-1]==0):
-				# print("left")
+				maze[tmp_y][tmp_x]=0
 				if(maze[tmp_y][tmp_x-1]==9):
 					player_1.coin_score+=1
 					maze[tmp_y][tmp_x-1]=0
-					# print("Score:",_.coin_score)
-				player_1.cleardraw()
+
 				player_1.player_coord[0]-=1
-				player_1.draw()
+				maze[player_1.player_coord[1]][player_1.player_coord[0]] = 7
 		elif keys[pygame.K_UP]:
 			if(maze[tmp_y-1][tmp_x]==9 or maze[tmp_y-1][tmp_x]==0):
-				# print("up")
+				maze[tmp_y][tmp_x]=0
 				if(maze[tmp_y-1][tmp_x]==9):
 					player_1.coin_score+=1
 					maze[tmp_y-1][tmp_x]=0
-					# print("Score:",player_1.coin_score)
-				player_1.cleardraw()
+				
 				player_1.player_coord[1]-=1
-				player_1.draw()
+				maze[player_1.player_coord[1]][player_1.player_coord[0]] = 7
 		elif keys[pygame.K_DOWN]:
 			if(maze[tmp_y+1][tmp_x]==9 or maze[tmp_y+1][tmp_x]==0):
-				# print("down")
+				maze[tmp_y][tmp_x]=0
 				if(maze[tmp_y+1][tmp_x]==9):
 					player_1.coin_score+=1
 					maze[tmp_y+1][tmp_x]=0
-					# print("Score:",player_1.coin_score)
-				player_1.cleardraw()
+					
 				player_1.player_coord[1]+=1
-				player_1.draw()
+				maze[player_1.player_coord[1]][player_1.player_coord[0]] = 7
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				print("Quit")
@@ -351,50 +361,50 @@ with multiprocessing.Manager() as manager:
 		
 		snd["player_coord"]=player_1.player_coord
 		snd["maze"]=maze
+		mapobj.show()
+
+		snd1['draw'] = ([-1,-1], (255, 255, 255))
+		snd1['clear_draw'] = (-1,-1)
+		snd1['draw_coin1'] = (-1,-1)
+		snd1['draw_coin2'] = (-1,-1)
+
+		snd2['draw'] = ([-1,-1], (255, 255, 255))
+		snd2['clear_draw'] = (-1,-1)
+		snd2['draw_coin1'] = (-1,-1)
+		snd2['draw_coin2'] = (-1,-1)
 
 		while True:
 			# print("main thread: {}" .format(snd['t_stat']))
 			# print("sum = ", sum(snd['t_stat']))
-			if(sum(snd['t_stat']) == 2):
-
-				print(snd1['clear_draw'])
-				print(snd1['draw_coin1'])
-				print(snd1['draw_coin2'])
-				print(snd1['draw'])
+			if(sum(snd['t_stat']) >= 2):
 				
-				if(snd1['clear_draw'][0] != -1):
-					cleardraw(snd1['clear_draw'])
-				if(snd2['clear_draw'][0] != -1):
-					cleardraw(snd2['clear_draw'])
+				# print(snd1['clear_draw'])
+				# print(snd1['draw_coin1'])
+				# print(snd1['draw_coin2'])
+				# print(snd1['draw'])
+				
+				# if(snd1['clear_draw'][0] != -1):
+				# 	cleardraw(snd1['clear_draw'])
+				# if(snd2['clear_draw'][0] != -1):
+				# 	cleardraw(snd2['clear_draw'])
 				
 					
-				for i in ["draw_coin1", "draw_coin2"]:
-					if(snd1[i][0] != -1):
-						draw_coin(snd1[i])
-					if(snd2[i][0] != -1):
-						draw_coin(snd2[i])
-
+				# for i in ["draw_coin1", "draw_coin2"]:
+				# 	if(snd1[i][0] != -1):
+				# 		draw_coin(snd1[i])
+				# 	if(snd2[i][0] != -1):
+				# 		draw_coin(snd2[i])
 						
 				if(snd1['draw'][0][0] != -1):
 					draw(snd1['draw'][0], snd1['draw'][1])
 				if(snd2['draw'][0][0] != -1):
 					draw(snd2['draw'][0], snd2['draw'][1])
 
-
-				snd1['draw'] = ([-1,-1], (255, 255, 255))
-				snd1['clear_draw'] = (-1,-1)
-				snd1['draw_coin1'] = (-1,-1)
-				snd1['draw_coin2'] = (-1,-1)
-
-				snd2['draw'] = ([-1,-1], (255, 255, 255))
-				snd2['clear_draw'] = (-1,-1)
-				snd2['draw_coin1'] = (-1,-1)
-				snd2['draw_coin2'] = (-1,-1)
-				
 				break
 			pygame.time.wait(100)
 		
+		pygame.display.flip()
+
 		clock.tick(10)
 		
-		pygame.display.flip()
 		snd["t_stat"]=[0 for i in range(4)]

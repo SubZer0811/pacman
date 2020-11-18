@@ -29,7 +29,7 @@ maze = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 	[1,9,9,9,9,9,9,1,1,9,9,9,9,1,1,9,9,9,9,1,1,9,9,9,9,9,9,1],
 	[1,9,1,1,1,1,1,1,1,1,1,1,9,1,1,9,1,1,1,1,1,1,1,1,1,1,9,1],
 	[1,9,1,1,1,1,1,1,1,1,1,1,9,1,1,9,1,1,1,1,1,1,1,1,1,1,9,1],
-	[1,9,9,9,9,9,9,9,9,9,9,9,9,0,0,9,9,9,9,9,9,9,9,9,9,9,9,1],
+	[1,9,9,9,9,9,9,9,9,9,9,9,9,7,0,9,9,9,9,9,9,9,9,9,9,9,9,1],
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
 
 
@@ -43,7 +43,9 @@ class maze_map:
 	coin_radius = 4
 	
 	############################## Player properties ##############################
-	
+	player_colour = (255, 255, 0)
+	player_radius = 8
+
 
 	def __init__(self, surface):
 		self.surface = surface
@@ -55,7 +57,12 @@ class maze_map:
 				if (i == 1):
 					pygame.draw.rect(self.surface, self.wall_colour, pygame.Rect((coord), (self.pixel_size, self.pixel_size))) 
 				if (i == 9):
+					pygame.draw.rect(self.surface, (0, 0, 0), pygame.Rect((coord), (self.pixel_size, self.pixel_size))) 
 					pygame.draw.circle(self.surface, self.coin_colour, (coord[0]+(self.pixel_center), coord[1]+(self.pixel_center)), self.coin_radius)
-				coord[0] += self.pixel_size
+				if (i == 0):
+					pygame.draw.rect(self.surface, (0, 0, 0), pygame.Rect((coord), (self.pixel_size, self.pixel_size))) 
+				if (i == 7):
+					pygame.draw.circle(self.surface, self.player_colour,  (coord[0]+(self.pixel_center), coord[1]+(self.pixel_center)), self.player_radius)
+				coord[0]+=self.pixel_size
 			coord[1] += self.pixel_size
 			coord[0] = 0
