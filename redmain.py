@@ -7,14 +7,15 @@ import time
 import multiprocessing
 from maze_map import *
 from player import *
-# from enemy import *
+from draw import *
+import config
 
 thread_status = [0, 0, 0, 0]
 
 pygame.init()
 pygame.font.init()
 surface = pygame.display.set_mode((560,700))
-
+config.surface = surface
 
 class ghost (maze_map):
 	
@@ -33,18 +34,6 @@ class ghost (maze_map):
 
 		# self.proc = multiprocessing.Process(target=self.move_ghost, daemon=True)
 		# self.thread = threading.Thread(target=self.move_ghost, daemon=True)
-		
-	def draw(self):
-		# global surface
-		pygame.draw.circle(surface, self.ghost_colour, (self.coord[0]*self.pixel_size+(self.pixel_center), self.coord[1]*self.pixel_size+(self.pixel_center)), self.ghost_radius)
-	
-	def cleardraw(self):
-		# global surface
-		pygame.draw.rect(surface,(0,0,0), pygame.Rect(([self.pixel_size*i for i in self.coord]), (self.pixel_size, self.pixel_size))) 
-	
-	def draw_coin(self):
-		# global surface
-		pygame.draw.circle(surface, self.coin_colour, (self.coord[0]*self.pixel_size+(self.pixel_center), self.coord[1]*self.pixel_size+(self.pixel_center)), self.coin_radius)
 	
 	def move_ghost(self, rcv):
 		global surface
@@ -60,7 +49,12 @@ class ghost (maze_map):
 			
 			if(t_stat[self.tid] == 0):
 
-				self.cleardraw()
+				# self.cleardraw()
+				print("save meeeeeee",self.tid,"   ",type(rcv["clear_draw"]))
+				trcv = rcv['clear_draw']
+				trcv = trcv.append(self.coord)
+				rcv['clear_draw'] = trcv
+				
 				maze=rcv["maze"]
 				if(self.speedcnt==0):
 
@@ -88,7 +82,10 @@ class ghost (maze_map):
 						key_press = test[ind]
 						
 					if(maze[tmp_y][tmp_x] == 9):
-						self.draw_coin()
+						# self.draw_coin()
+						trcv=rcv['draw_coin']
+						trcv=trcv.append((tmp_x, tmp_y))
+						rcv['draw_coin']=trcv
 						
 					if(key_press == 0):
 						if(maze[tmp_y][tmp_x+1] != 1):
@@ -113,10 +110,17 @@ class ghost (maze_map):
 					
 					print(key_press)
 					
-					self.draw()
+					# self.draw()
+					trcv=rcv['draw']
+					trcv=trcv.append((self.coord, self.ghost_colour))
+					rcv['draw']=trcv
 					self.speedcnt=1
 				else:
-					self.cleardraw()
+					# self.cleardraw()
+					trcv=rcv['clear_draw']
+					trcv=trcv.append(self.coord)
+					rcv['clear_draw']=trcv
+
 					tf_x = self.coord[0]
 					tf_y = self.coord[1]
 					tmp_x = int(self.coord[0])
@@ -124,7 +128,10 @@ class ghost (maze_map):
 					self.coord[0]=tmp_x
 					self.coord[1]=tmp_y
 					if(maze[tmp_y][tmp_x] == 9):
-					 	self.draw_coin()
+					 	# self.draw_coin()
+						trcv=rcv['draw_coin']
+						trcv=trcv.append((tmp_x, tmp_y))
+						rcv['draw_coin']=trcv
 					if(self.dir==0):
 						tf_x+=0.5
 						tmp_x+=1
@@ -141,11 +148,16 @@ class ghost (maze_map):
 					self.coord[0]=tmp_x
 					self.coord[1]=tmp_y
 					if(maze[tmp_y][tmp_x] == 9):
-						self.draw_coin()
+						# self.draw_coin()
+						trcv=rcv['draw_coin']
+						trcv=trcv.append((tmp_x, tmp_y))
+						rcv['draw_coin']=trcv
 					self.coord[0]=tf_x
 					self.coord[1]=tf_y
-					self.draw()
-
+					# self.draw()
+					trcv=rcv['draw']
+					trcv=trcv.append((self.coord, self.ghost_colour))
+					rcv['draw']=trcv
 					self.speedcnt=0
 				t_stat[self.tid] = 1
 				rcv["t_stat"]=t_stat
@@ -229,8 +241,11 @@ player_1.draw()
 
 ghost1=ghost([11,13],surface,0)
 ghost2=ghost([15,13],surface,1,color="pink")
-ghost1.draw()
-ghost2.draw()
+
+draw((ghost1.coord), ghost1.ghost_colour)
+draw(ghost2.coord, ghost2.ghost_colour)
+# ghost1.draw()
+# ghost2.draw()
 
 pygame.display.flip()
 clock = pygame.time.Clock()
@@ -244,6 +259,9 @@ with multiprocessing.Manager() as manager:
 	snd['t_stat'] = thread_status
 	snd['player_coord'] = player_1.player_coord
 	snd['maze'] = maze
+	snd['draw'] = [((10,10),(255, 255, 0))]
+	snd['clear_draw'] = [(20,20)]
+	snd['draw_coin'] = [(30,30)]
 
 	p1 = multiprocessing.Process(target=ghost1.move_ghost, args=(snd,)) 
 	p2 = multiprocessing.Process(target=ghost2.move_ghost, args=(snd,))
@@ -331,8 +349,20 @@ with multiprocessing.Manager() as manager:
 			# print("sum = ", sum(snd['t_stat']))
 			print("main: ", ghost1.coord)
 			if(sum(snd['t_stat']) == 2):
-				# print(thread_status)
-				# print("asdf")
+
+				print(snd['clear_draw'])
+				print(snd['draw_coin'])
+				print(snd['draw'])
+
+				for i in snd["clear_draw"]:
+					cleardraw(i)
+				snd["clear_draw"]=[]
+				for i in snd["draw_coin"]:
+					draw_coin(i)
+				snd["draw_coin"]=[]
+				for i in snd["draw"]:
+					draw(i[0],i[1])		
+				snd["draw"]=[]
 				break
 			pygame.time.wait(100)
 		
