@@ -51,11 +51,12 @@ class ghost (maze_map):
 		pygame.draw.circle(surface, (0,53,255), (100, 100), 75)
 		# global thread_status, player_1
 		while True:
+			print(self.tid, "proc: ", self.coord)
 			pygame.time.wait(100)
-			print(self.tid, ": ", rcv['t_stat'][self.tid])
+			# print(self.tid, ": ", rcv['t_stat'][self.tid])
 			t_stat=rcv['t_stat']
 			
-			print(self.tid, " ghost: ", self.coord)
+			# print(self.tid, " ghost: ", self.coord)
 			
 			if(t_stat[self.tid] == 0):
 
@@ -326,8 +327,9 @@ with multiprocessing.Manager() as manager:
 		snd["maze"]=maze
 
 		while True:
-			print("main thread: {}" .format(snd['t_stat']))
-			print("sum = ", sum(snd['t_stat']))
+			# print("main thread: {}" .format(snd['t_stat']))
+			# print("sum = ", sum(snd['t_stat']))
+			print("main: ", ghost1.coord)
 			if(sum(snd['t_stat']) == 2):
 				# print(thread_status)
 				# print("asdf")
