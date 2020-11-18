@@ -293,7 +293,7 @@ clock = pygame.time.Clock()
 
 GAME_FONT = pygame.font.SysFont('Comic Sans MS', 24)
 ghost1.thread.start()
-# ghost2.thread.start()
+ghost2.thread.start()
 
 while True:
 	thread_status = [0, 0, 0, 0]
@@ -366,7 +366,7 @@ while True:
 	
 	while True:
 		# print("main thread: {}" .format(thread_status))
-		if(sum(thread_status) == 1):
+		if(sum(thread_status) == 2):
 			# print(thread_status)
 			# print("asdf")
 			break
