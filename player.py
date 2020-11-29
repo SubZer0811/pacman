@@ -14,6 +14,7 @@ class player(maze_map):
 		self.player_coord=player_coord
 		self.surface = surface
 		self.coin_score=0
+
 	def cleardraw(self):
 		pygame.draw.rect(self.surface,(0,0,0), pygame.Rect(([self.pixel_size*i for i in self.player_coord]), (self.pixel_size, self.pixel_size))) 
 

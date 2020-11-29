@@ -10,11 +10,11 @@ class ghost (maze_map):
 		self.dir=-1
 		if(color == "red"):
 			self.ghost_colour = (255,0,0)
-		elif(color=="pink"):
-			self.ghost_colour=(255,105,180)
+		elif(color=="blue"):
+			self.ghost_colour=(34,234,233)
 		elif(color == "yellow"):
 			self.dir=2
-			self.ghost_colour=(255,255,0)
+			self.ghost_colour=(255,195,11)
 		self.ghost_radius = 10
 		self.mode="chase"
 		self.color=color
@@ -23,10 +23,10 @@ class ghost (maze_map):
 
 	def move_ghost(self, rcv, ret):
 		
+		prev_speed_cnt = 1
 		while True:
-			pygame.time.wait(100)
+			pygame.time.wait(50)
 			t_stat=rcv['t_stat']
-
 			if(t_stat[self.tid] == 3):
 				return
 
@@ -40,12 +40,13 @@ class ghost (maze_map):
 
 					if(self.color=="red"):
 						key_press = self.move_red(rcv)
-					elif(self.color == 'pink'):
-						key_press = self.move_pink(rcv)
+					elif(self.color == 'blue'):
+						key_press = self.move_blue(rcv)
 					elif(self.color == 'yellow'):
 						key_press = self.move_yellow(rcv)
 
 					if(key_press==-1):
+						t_stat[self.tid] = 1
 						continue
 					if(maze[tmp_y][tmp_x] == 9):
 						ret["draw_coin1"]=(tmp_x, tmp_y)
@@ -73,7 +74,8 @@ class ghost (maze_map):
 
 					ret["draw"]=(self.coord,self.ghost_colour)
 					self.speedcnt=1
-				else:
+					t_stat[self.tid] = 1
+				elif(self.speedcnt==1):
 					ret['clear_draw']=tuple(self.coord)
 
 					tf_x = self.coord[0]
@@ -105,8 +107,10 @@ class ghost (maze_map):
 					self.coord[1]=tf_y
 					ret["draw"]=(self.coord,self.ghost_colour)
 					self.speedcnt=0
-				t_stat[self.tid] = 1
+
+					t_stat[self.tid] = 1
 				rcv["t_stat"]=t_stat
+				# print(key_press)
 
 	def BFS(self, start, target):
 		start=[int(i) for i in start]
@@ -154,7 +158,7 @@ class ghost (maze_map):
 		elif(self.coord[1]>s[1]):
 			return 2
 
-	def move_pink(self, rcv):
+	def move_blue(self, rcv):
 
 		tmp_x=int(self.coord[0])
 		tmp_y=int(self.coord[1])
@@ -193,7 +197,6 @@ class ghost (maze_map):
 		if(maze[tmp_y+1][tmp_x] != 1):
 			test.append(3)
 
-		print("test: ", test)
 		if(self.dir in test):
 			return self.dir
 		return random.choice(test)
