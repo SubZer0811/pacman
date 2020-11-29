@@ -37,7 +37,7 @@ class maze_map:
 
 	pixel_size = 20
 	pixel_center = pixel_size/2
-	wall_colour = (255,0,0)
+	wall_colour = (0,0,128)
 	
 	coin_colour = (255, 182, 193)
 	coin_radius = 4

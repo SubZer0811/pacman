@@ -142,8 +142,8 @@ class ghost (maze_map):
 
 	def move_red(self, rcv):
 
-		s=self.BFS(self.coord,rcv["player_coord"])
-		if(s==-1):
+		s = self.BFS(self.coord,rcv["player_coord"])
+		if(s == -1):
 			return -1
 		if(self.coord[0]<s[0]):
 			return 0
