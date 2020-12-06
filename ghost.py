@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pygame
 import random
 from maze_map import *

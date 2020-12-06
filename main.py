@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 
 import pygame
 import sys
 import random
@@ -23,6 +24,10 @@ surface = pygame.display.set_mode((config.WIDTH, config.HEIGHT))
 config.surface = surface
 
 image = pygame.image.load(r'start_screen.png') 
+
+gameIcon = pygame.image.load('icon.png')
+
+pygame.display.set_icon(gameIcon)
 
 surface.blit(image, (1, 1)) 
 
@@ -166,9 +171,10 @@ with multiprocessing.Manager() as manager:
 			# pygame.time.wait(100)
 		if(snd1['draw'][0] == player_1.player_coord 
 		or snd2['draw'][0] == player_1.player_coord 
-		or snd3['draw'][0] == player_1.player_coord):
+		or snd3['draw'][0] == player_1.player_coord ):
 		
 			if(player_1.lives - 1 > 0):
+
 				player_1.lives -= 1
 				maze[player_1.player_coord[1]][player_1.player_coord[0]] = 0
 				player_1.player_coord[0] = 13
@@ -185,8 +191,17 @@ with multiprocessing.Manager() as manager:
 				del ghost1
 				del ghost2
 				del ghost3
-				replay=end_window()
-
+				replay=end_window(player_1.coin_score)
+		elif(player_1.coin_score == 286):
+			snd["t_stat"] = [3 for i in range(4)]
+			p1.join()
+			p2.join()
+			p3.join()
+			del ghost1
+			del ghost2
+			del ghost3
+			replay=end_window(player_1.coin_score)
+	
 
 		snd1['draw'] = ([-1, -1], (255, 255, 255))
 		snd1['clear_draw'] = (-1, -1)

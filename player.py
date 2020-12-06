@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from maze_map import *
 import pygame
 
@@ -5,7 +6,6 @@ class player(maze_map):
 	
 	SIZE = (10, 10)
 	color = (255,0,0)
-	VELOCITY = 1
 	lives = 3
 	player_colour = (255, 255, 0)
 	player_radius = 8

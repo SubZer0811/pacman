@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import pygame
 import config
 import os
@@ -27,20 +28,24 @@ def draw_text(words, screen, pos, size, colour, font_name, centered=False):
         screen.blit(text, pos)
 	
 	
-def end_window():
+def end_window(score):
 	config.surface.fill((0, 0, 0))
 	
 	image = pygame.image.load(r'game_over.jpg') 
 	config.surface.blit(image, (100, 0)) 
 
 	pygame.display.update()
-
+	if(int(score) == 286):
+		score="YOU'VE WON!!!!   Score : " + str(score)
+	score="Score : " + str(score)
 	quit_text = "Press the ESCAPE to quit"
 	again_text = "Press SPACE to play with again"
-	draw_text(again_text, config.surface, [
+	draw_text(score, config.surface, [
 					config.WIDTH//2, config.HEIGHT//2+100],  36, (190, 190, 190), 'Comic Sans MS', centered=True)
+	draw_text(again_text, config.surface, [
+					config.WIDTH//2, config.HEIGHT//2+200],  36, (190, 190, 190), 'Comic Sans MS', centered=True)
 	draw_text(quit_text, config.surface, [
-					config.WIDTH//2, config.HEIGHT//2 + 200],  36, (190, 190, 190), 'Comic Sans MS', centered=True)
+					config.WIDTH//2, config.HEIGHT//2 + 270],  36, (190, 190, 190), 'Comic Sans MS', centered=True)
 	pygame.display.update()
 	while True:
 		for event in pygame.event.get():
